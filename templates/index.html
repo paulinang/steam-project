@@ -4,6 +4,13 @@
         <title>Steam project</title>
     </head>
     <body>
+        <script src="https://code.jquery.com/jquery.js"></script>
+
         <h1>Steam Project</h1>
+        <p>Enter your current nickname</p>
+        <form id='search-user' action='/get_user' method='POST'>
+            <input type='text' name='nickname'>
+            <input type='submit'>
+        </form>
     </body>
 </html>
