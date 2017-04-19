@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 import os
 import requests
@@ -14,11 +14,11 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/get_user', methods=['POST'])
+@app.route('/get_user', methods=['GET'])
 def get_user():
     """ Get steam user info """
 
-    nickname = request.form.get('nickname')
+    nickname = request.args.get('nickname')
 
     r_id = requests.get('http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={}&vanityurl={}'.format(steam_key, nickname))
     steamid = r_id.json()['response']['steamid']
@@ -28,9 +28,12 @@ def get_user():
 
     r_games = requests.get('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={}&steamid={}'.format(steam_key, steamid))
     game_count = r_games.json()['response']['game_count']
+    games = r_games.json()['response']['games']
 
-    return 'Hi {}, you own {} games and your steam profile url is {}'.format(nickname, game_count, profile_url)
-
+    return jsonify({'steamid': steamid,
+                    'profileurl': profile_url,
+                    'gamecount': game_count,
+                    'games': games})
 
 if __name__ == "__main__":
     app.debug = False
