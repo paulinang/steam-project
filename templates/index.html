@@ -52,18 +52,33 @@
             });
 
             $('#min-play-hours').on('change', function (evt) {
-                var minHours = parseInt($(this).val());
-                console.log(minHours);
+                var newMinHours = parseInt($(this).val());
+                console.log(newMinHours);
 
-                for (i=minPlayHours; i<=minHours; i++) {
-                    console.log(i); 
-                    var tempPaths = $('.hours' + i.toString()).toArray( );
-                    for (j=0; j<tempPaths.length; j++) {
-                        reducePaths.push(tempPaths[j]);
+                if (newMinHours > minPlayHours) {
+                    for (i=minPlayHours; i<newMinHours; i++) {
+                        console.log(i); 
+                        var tempPaths = $('.hours' + i.toString()).toArray( );
+                        for (j=0; j<tempPaths.length; j++) {
+                            reducePaths.push(tempPaths[j]);
+                        }
+                    }
+                }
+                else if (newMinHours < minPlayHours) {
+                    var k = reducePaths.length - 1;
+                    var overMinHours = true;
+                    while (overMinHours) {
+                        if (reducePaths[k].__data__.value > newMinHours){
+                            reducePaths.pop();
+                            k -= 1;
+                        }
+                        else {
+                            overMinHours = false;
+                        }
                     }
                 }
 
-                minPlayHours = minHours;
+                minPlayHours = newMinHours;
             });
         </script>
     </body>
