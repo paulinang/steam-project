@@ -25,7 +25,8 @@
             makeDonutChart("#play-hours-chart", tempData);
 
             // initialize user info vars
-            var steamid, profileurl, gamecount, games, playhours
+            var steamid, profileurl, gamecount, games, playhours, minPlayHours, reducePaths;
+
 
             // when user enters new steam nickname
             $('#search-user').on('submit', function (evt) {
@@ -45,14 +46,24 @@
                         // replace placeholder chart with user data
                         $("#play-hours-chart").empty();
                         makeDonutChart("#play-hours-chart", playhours);
+                        minPlayHours = 0;
+                        reducePaths = [];
                 });
-
             });
 
             $('#min-play-hours').on('change', function (evt) {
-                var minHours = ($(this).val());
-                var reducePaths = $('.hours' + minHours.toString());
-                console.log(reducePaths);
+                var minHours = parseInt($(this).val());
+                console.log(minHours);
+
+                for (i=minPlayHours; i<=minHours; i++) {
+                    console.log(i); 
+                    var tempPaths = $('.hours' + i.toString()).toArray( );
+                    for (j=0; j<tempPaths.length; j++) {
+                        reducePaths.push(tempPaths[j]);
+                    }
+                }
+
+                minPlayHours = minHours;
             });
         </script>
     </body>
