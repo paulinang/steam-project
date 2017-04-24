@@ -6,6 +6,7 @@
     <body>
         <script src="https://code.jquery.com/jquery.js"></script>
         <script src="//d3js.org/d3.v3.min.js"></script>
+        <script src="/static/donut_chart.js"></script>
 
         <h1>Steam Project</h1>
         <p>Enter your current nickname</p>
@@ -13,50 +14,46 @@
             <input type='text' id='nickname' name='nickname'>
             <input type='submit'>
         </form>
+        <input id='min-play-hours' type='range' min='0' max='300'>
+        <div id='play-hours-chart'></div>
 
         <script>
-            var steamid, profileurl, gamecount, games
+            // placeholder data
+            var tempData = [['Outlast', 4], ['Fallout', 20], ['Path of Exile', 12]];
+
+            // make a temporary donut chart when page opens
+            makeDonutChart("#play-hours-chart", tempData);
+
+            // initialize user info vars
+            var steamid, profileurl, gamecount, games, playhours
+
+            // when user enters new steam nickname
             $('#search-user').on('submit', function (evt) {
+                //prevent submission of form
                 evt.preventDefault();
+                // AJAX request for user infro from Steam API instead
                 $.get('/get_user', 
                     {nickname: $('#nickname').val()}, 
                     function (data) {
+                        // assign data to user info vars
                         steamid = data.steamid;
                         profileurl = data.profileurl;
                         gamecount = data.gamecount;
                         games = data.games;
-                    });
+                        playhours = data.playedgames;
+
+                        // replace placeholder chart with user data
+                        $("#play-hours-chart").empty();
+                        makeDonutChart("#play-hours-chart", playhours);
+                });
+
+            });
+
+            $('#min-play-hours').on('change', function (evt) {
+                var minHours = ($(this).val());
+                var reducePaths = $('.hours' + minHours.toString());
+                console.log(reducePaths);
             });
         </script>
-
-        <script>
-            // d3 donut chart
-            // heavily used reference: https://bl.ocks.org/mbostock/3887193
-
-            var data = [
-                {game: 'Outlast', hours: 4},
-                {game: 'Fallout 4', hours: 20},
-                {game: 'Path of Exile', hours: 12}
-            ];
-
-            var width = 960,
-                height = 500,
-                radius = Math.min(width, height) / 2;
-
-            var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
-            var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(radius - 70);
-
-            var pie = d3.layout.pie().sort(null).value(function(d) { return d.hours; });
-
-            var svg = d3.select("body").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            var g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
-
-            g.append("path").attr("d", arc).style("fill", function(d) { return color(d.data.game); });
-
-            g.append("text").attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; }).attr("dy", ".35em").text(function(d) { return d.data.game; });
-            </script>
-
     </body>
 </html>
