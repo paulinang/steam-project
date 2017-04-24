@@ -21,7 +21,9 @@ function makeDonutChart(chartDiv, dataset) {
         d:arc,
         fill: function (d,i) {
             return color(i);
-        }
+        },
+        // creates a class for playhours to select paths faster
+        class: function(d) { return "hours" + d.data[1].toString(); }
     });
 
     // add text
