@@ -22,7 +22,7 @@
             var tempData = [['Outlast', 4], ['Fallout', 20], ['Path of Exile', 12]];
 
             // make a temporary donut chart when page opens
-            makeDonutChart("#play-hours-chart", tempData);
+            var currentChartArc = makeDonutChart("#play-hours-chart", tempData);
 
             // initialize user info vars
             var steamid, profileurl, gamecount, games, playhours, minPlayHours, reducePaths;
@@ -55,10 +55,18 @@
 
                 if (newMinHours > minPlayHours) {
                     for (i=minPlayHours; i<newMinHours; i++) {
-                        console.log(i); 
-                        var tempPaths = $('.hours' + i.toString()).toArray( );
-                        for (j=0; j<tempPaths.length; j++) {
-                            reducePaths.push(tempPaths[j]);
+                        //console.log(i); 
+                        //var tempPaths = $('.hours' + i.toString()).toArray( );
+
+                        // get array of paths to reduce
+                        var tempPaths = d3.select('.hours' + i.toString());
+                        debugger;
+                        if (tempPaths[0][0]) {
+                            tempPaths.transition().duration(750).attrTween("d", arcTween(currentChartArc, 0));
+                            //for (j=0; j<tempPaths.length; j++) {
+                                // go through each path and add animation transition to reduce
+                                // tempPaths[i].transition().duration(750).attrTween("d", arcTween(0));
+                            // }
                         }
                     }
                 }
